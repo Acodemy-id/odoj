@@ -17,7 +17,7 @@ export function LandingClient() {
             {/* Antigravity background */}
             <div className="absolute inset-0 z-0">
                 <Antigravity
-                    count={300}
+                    count={200}
                     magnetRadius={5}
                     ringRadius={5}
                     waveSpeed={0.4}
@@ -30,7 +30,7 @@ export function LandingClient() {
                     depthFactor={1}
                     pulseSpeed={3}
                     fieldStrength={20}
-                    color="#86efac"
+                    color="rgb(69, 136, 114)"
                     particleShape="sphere"
                 />
             </div>
