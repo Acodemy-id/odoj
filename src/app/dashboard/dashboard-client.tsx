@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ReadingForm } from "./reading-form";
 import { ReadingChart } from "./reading-chart";
 import { StudentBottomNav } from "@/components/bottom-nav";
+import { HadithCard } from "@/components/hadith-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -93,6 +94,9 @@ export function DashboardClient({ profile, initialReadings, totalJuz, totalPages
 
                 {/* Chart */}
                 <ReadingChart readings={initialReadings} />
+
+                {/* Hadith of the Day */}
+                <HadithCard />
             </main>
 
             <StudentBottomNav />

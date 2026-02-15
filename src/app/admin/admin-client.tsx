@@ -7,6 +7,7 @@ import { toggleReadingsEnabled } from "./actions";
 import { AdminChart } from "./admin-chart";
 import { StudentDetailDialog } from "./student-detail-dialog";
 import { AdminBottomNav } from "@/components/bottom-nav";
+import { HadithCard } from "@/components/hadith-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -209,6 +210,9 @@ export function AdminDashboardClient({ profile, aggregatedData, initialStudents,
                         </div>
                     </CardContent>
                 </Card>
+
+                {/* Hadith of the Day */}
+                <HadithCard />
             </main>
 
             {/* Student Detail Dialog */}
