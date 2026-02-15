@@ -46,9 +46,13 @@ export function PwaInstallPrompt() {
         // Don't show if already installed as PWA
         if (isRunningAsPWA()) return;
 
-        // Don't show if user previously dismissed (permanent)
+        // Don't show if user previously dismissed (unless 7 days passed)
         const dismissed = localStorage.getItem(DISMISSED_KEY);
-        if (dismissed) return;
+        if (dismissed) {
+            const dismissedAt = parseInt(dismissed, 10);
+            // Re-show after 7 days
+            if (Date.now() - dismissedAt < 7 * 24 * 60 * 60 * 1000) return;
+        }
 
         // Detect iOS (no native beforeinstallprompt support)
         const ua = navigator.userAgent;
