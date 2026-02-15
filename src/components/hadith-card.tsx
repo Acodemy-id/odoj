@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { ScrollText, RefreshCw } from "lucide-react";
 
 interface HadithData {
     text: { ar: string; id: string };
@@ -38,7 +39,12 @@ export function HadithCard() {
 
         if (force) setRefreshing(true);
 
-        fetch("https://api.myquran.com/v3/hadis/enc/random")
+        // Append timestamp to bust any HTTP/CDN cache on refresh
+        const url = force
+            ? `https://api.myquran.com/v3/hadis/enc/random?_t=${Date.now()}`
+            : "https://api.myquran.com/v3/hadis/enc/random";
+
+        fetch(url, { cache: "no-store" })
             .then((res) => res.json())
             .then((json) => {
                 if (json.status && json.data) {
@@ -90,7 +96,7 @@ export function HadithCard() {
                 {/* Title */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <span className="text-lg">📜</span>
+                        <ScrollText className="w-5 h-5 text-amber-600" />
                         <h3 className="text-sm font-bold text-amber-800">Hadis Hari Ini</h3>
                     </div>
                     <button
@@ -99,7 +105,7 @@ export function HadithCard() {
                         className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-amber-200/50 transition-colors text-amber-600 disabled:opacity-40"
                         title="Hadis baru"
                     >
-                        <span className={`text-sm ${refreshing ? "animate-spin" : ""}`}>🔄</span>
+                        <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
                     </button>
                 </div>
 

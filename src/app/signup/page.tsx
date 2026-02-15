@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Moon } from "lucide-react";
 import { CLASS_OPTIONS } from "@/lib/constants";
 import Link from "next/link";
 
@@ -43,7 +44,7 @@ export default function SignupPage() {
             <Card className="w-full max-w-md shadow-xl border-emerald-100">
                 <CardHeader className="text-center space-y-2">
                     <div className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl flex items-center justify-center mb-2 shadow-lg">
-                        <span className="text-2xl">🌙</span>
+                        <Moon className="w-8 h-8 text-white" />
                     </div>
                     <CardTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-700 to-emerald-500 bg-clip-text text-transparent">
                         Daftar Akun Baru
@@ -66,7 +67,7 @@ export default function SignupPage() {
                                 id="full_name"
                                 name="full_name"
                                 type="text"
-                                placeholder="Ahmad Fauzi"
+                                placeholder="Nama Lengkap"
                                 required
                                 className="h-11"
                             />
@@ -100,7 +101,7 @@ export default function SignupPage() {
                         <div className="space-y-2">
                             <Label htmlFor="class_name">Kelas</Label>
                             <Select value={className} onValueChange={setClassName}>
-                                <SelectTrigger id="class_name" className="h-11">
+                                <SelectTrigger id="class_name" className="w-full h-11">
                                     <SelectValue placeholder="Pilih kelas..." />
                                 </SelectTrigger>
                                 <SelectContent>

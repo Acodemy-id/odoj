@@ -4,6 +4,7 @@
 import { logout } from "@/app/auth/actions";
 import { StudentBottomNav } from "@/components/bottom-nav";
 import { SURAHS } from "@/lib/quran-metadata";
+import { User, ClipboardList, LogOut } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -40,8 +41,9 @@ export function ProfileClient({ profile, readings, totalJuz, totalPages }: Props
             {/* Header */}
             <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-emerald-100">
                 <div className="max-w-2xl mx-auto px-4 py-3">
-                    <h1 className="text-lg font-bold bg-gradient-to-r from-emerald-700 to-emerald-500 bg-clip-text text-transparent">
-                        👤 Profil
+                    <h1 className="text-lg font-bold bg-gradient-to-r from-emerald-700 to-emerald-500 bg-clip-text text-transparent flex items-center gap-1.5">
+                        <User className="w-5 h-5 text-emerald-600" />
+                        Profil
                     </h1>
                 </div>
             </header>
@@ -74,7 +76,9 @@ export function ProfileClient({ profile, readings, totalJuz, totalPages }: Props
                 <Card className="border-emerald-100 shadow-lg">
                     <CardHeader className="pb-3">
                         <CardTitle className="text-lg flex items-center gap-2">
-                            <span className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center text-sm">📋</span>
+                            <span className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                                <ClipboardList className="w-4 h-4 text-emerald-600" />
+                            </span>
                             Riwayat Bacaan
                             <Badge variant="secondary" className="ml-auto text-xs">
                                 {readings.length} entri
@@ -119,8 +123,9 @@ export function ProfileClient({ profile, readings, totalJuz, totalPages }: Props
                 <form action={logout}>
                     <Button
                         variant="outline"
-                        className="w-full h-11 border-red-200 text-red-600 hover:bg-red-50 font-semibold"
+                        className="w-full h-11 border-red-200 text-red-600 hover:bg-red-50 font-semibold gap-2"
                     >
+                        <LogOut className="w-4 h-4" />
                         Keluar dari Akun
                     </Button>
                 </form>

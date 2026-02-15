@@ -3,27 +3,30 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Home, Trophy, User, Users, LogOut } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 interface NavItem {
     href: string;
     label: string;
-    icon: string;
+    icon: LucideIcon;
 }
 
 const STUDENT_NAV: NavItem[] = [
-    { href: "/dashboard", label: "Home", icon: "🏠" },
-    { href: "/leaderboard", label: "Leaderboard", icon: "🏆" },
-    { href: "/profile", label: "Profil", icon: "👤" },
+    { href: "/dashboard", label: "Home", icon: Home },
+    { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
+    { href: "/profile", label: "Profil", icon: User },
 ];
 
 const ADMIN_NAV: NavItem[] = [
-    { href: "/admin", label: "Home", icon: "🏠" },
-    { href: "/leaderboard", label: "Leaderboard", icon: "🏆" },
-    { href: "/admin/students", label: "Siswa", icon: "👥" },
-    { href: "/admin/logout", label: "Keluar", icon: "🚪" },
+    { href: "/admin", label: "Home", icon: Home },
+    { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
+    { href: "/admin/students", label: "Siswa", icon: Users },
+    { href: "/admin/logout", label: "Keluar", icon: LogOut },
 ];
 
 function NavLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
+    const Icon = item.icon;
     return (
         <Link
             href={item.href}
@@ -32,9 +35,7 @@ function NavLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
                     : "text-gray-400 hover:text-gray-600"
                 }`}
         >
-            <span className={`text-xl ${isActive ? "scale-110" : ""} transition-transform`}>
-                {item.icon}
-            </span>
+            <Icon className={`w-5 h-5 ${isActive ? "scale-110" : ""} transition-transform`} />
             <span className={`text-[10px] font-medium ${isActive ? "font-bold" : ""}`}>
                 {item.label}
             </span>

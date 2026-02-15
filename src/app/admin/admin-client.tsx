@@ -8,6 +8,7 @@ import { AdminChart } from "./admin-chart";
 import { StudentDetailDialog } from "./student-detail-dialog";
 import { AdminBottomNav } from "@/components/bottom-nav";
 import { HadithCard } from "@/components/hadith-card";
+import { BookOpen, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -79,8 +80,9 @@ export function AdminDashboardClient({ profile, aggregatedData, initialStudents,
             {/* Header */}
             <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-emerald-100">
                 <div className="max-w-4xl mx-auto px-4 py-3">
-                    <h1 className="text-lg font-bold bg-gradient-to-r from-emerald-700 to-emerald-500 bg-clip-text text-transparent">
-                        📖 ODOJ Admin
+                    <h1 className="text-lg font-bold bg-gradient-to-r from-emerald-700 to-emerald-500 bg-clip-text text-transparent flex items-center gap-1.5">
+                        <BookOpen className="w-5 h-5 text-emerald-600" />
+                        ODOJ Admin
                     </h1>
                     <p className="text-xs text-muted-foreground">{profile.full_name}</p>
                 </div>
@@ -150,7 +152,9 @@ export function AdminDashboardClient({ profile, aggregatedData, initialStudents,
                     <CardHeader className="pb-3">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                             <CardTitle className="text-lg flex items-center gap-2">
-                                <span className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center text-sm">👥</span>
+                                <span className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                                    <Users className="w-4 h-4 text-emerald-600" />
+                                </span>
                                 Daftar Siswa
                             </CardTitle>
                             <Select value={classFilter} onValueChange={setClassFilter}>

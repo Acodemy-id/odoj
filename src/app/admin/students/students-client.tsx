@@ -5,6 +5,7 @@ import { useState } from "react";
 import { getStudentReadings } from "../actions";
 import { AdminBottomNav } from "@/components/bottom-nav";
 import { StudentDetailDialog } from "../student-detail-dialog";
+import { Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -36,8 +37,9 @@ export function StudentsListClient({ students }: Props) {
         <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-amber-50 pb-20">
             <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-emerald-100">
                 <div className="max-w-4xl mx-auto px-4 py-3">
-                    <h1 className="text-lg font-bold bg-gradient-to-r from-emerald-700 to-emerald-500 bg-clip-text text-transparent">
-                        👥 Daftar Siswa
+                    <h1 className="text-lg font-bold bg-gradient-to-r from-emerald-700 to-emerald-500 bg-clip-text text-transparent flex items-center gap-1.5">
+                        <Users className="w-5 h-5 text-emerald-600" />
+                        Daftar Siswa
                     </h1>
                     <p className="text-xs text-muted-foreground">{students.length} siswa terdaftar</p>
                 </div>

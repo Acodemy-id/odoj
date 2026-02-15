@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { BookOpen } from "lucide-react";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -33,7 +34,7 @@ export default function LoginPage() {
             <Card className="w-full max-w-md shadow-xl border-emerald-100">
                 <CardHeader className="text-center space-y-2">
                     <div className="mx-auto w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl flex items-center justify-center mb-2 shadow-lg">
-                        <span className="text-2xl">📖</span>
+                        <BookOpen className="w-8 h-8 text-white" />
                     </div>
                     <CardTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-700 to-emerald-500 bg-clip-text text-transparent">
                         ODOJ Ramadan Tracker

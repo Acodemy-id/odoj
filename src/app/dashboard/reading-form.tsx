@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PenLine } from "lucide-react";
 import { toast } from "sonner";
 
 export function ReadingForm({ onSuccess }: { onSuccess: () => void }) {
@@ -44,7 +45,9 @@ export function ReadingForm({ onSuccess }: { onSuccess: () => void }) {
         <Card className="border-emerald-100 shadow-lg">
             <CardHeader className="pb-4">
                 <CardTitle className="text-lg flex items-center gap-2">
-                    <span className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center text-sm">📝</span>
+                    <span className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                        <PenLine className="w-4 h-4 text-emerald-600" />
+                    </span>
                     Catat Tilawah Hari Ini
                 </CardTitle>
                 <CardDescription>Masukkan ayat yang dibaca hari ini</CardDescription>
@@ -54,11 +57,11 @@ export function ReadingForm({ onSuccess }: { onSuccess: () => void }) {
                     {/* Start position */}
                     <div className="p-3 bg-emerald-50/50 rounded-lg space-y-3">
                         <p className="text-sm font-semibold text-emerald-700">Mulai dari:</p>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-3">
                             <div className="space-y-1.5">
                                 <Label className="text-xs">Surah</Label>
                                 <Select value={startSurah} onValueChange={setStartSurah}>
-                                    <SelectTrigger className="h-10 bg-white">
+                                    <SelectTrigger className="w-full h-10 bg-white">
                                         <SelectValue placeholder="Pilih surah" />
                                     </SelectTrigger>
                                     <SelectContent className="max-h-60">
@@ -90,11 +93,11 @@ export function ReadingForm({ onSuccess }: { onSuccess: () => void }) {
                     {/* End position */}
                     <div className="p-3 bg-amber-50/50 rounded-lg space-y-3">
                         <p className="text-sm font-semibold text-amber-700">Sampai:</p>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-3">
                             <div className="space-y-1.5">
                                 <Label className="text-xs">Surah</Label>
                                 <Select value={endSurah} onValueChange={setEndSurah}>
-                                    <SelectTrigger className="h-10 bg-white">
+                                    <SelectTrigger className="w-full h-10 bg-white">
                                         <SelectValue placeholder="Pilih surah" />
                                     </SelectTrigger>
                                     <SelectContent className="max-h-60">

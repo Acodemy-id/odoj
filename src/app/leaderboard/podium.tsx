@@ -76,10 +76,10 @@ function PodiumSlot({
                     {isFirst && (
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
                     )}
-                    <span className="text-lg sm:text-2xl font-black text-white drop-shadow-md relative z-10">
+                    <span className={`text-lg sm:text-2xl font-black drop-shadow-md relative z-10 ${entry.rank === 2 ? "text-gray-800" : "text-white"}`}>
                         {value}
                     </span>
-                    <span className="text-[10px] sm:text-xs text-white/80 font-medium relative z-10">{unit}</span>
+                    <span className={`text-[10px] sm:text-xs font-medium relative z-10 ${entry.rank === 2 ? "text-gray-600" : "text-white/80"}`}>{unit}</span>
                 </div>
             </div>
         </div>

@@ -1,12 +1,13 @@
 // src/app/dashboard/dashboard-client.tsx
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ReadingForm } from "./reading-form";
 import { ReadingChart } from "./reading-chart";
 import { StudentBottomNav } from "@/components/bottom-nav";
 import { HadithCard } from "@/components/hadith-card";
+import { BookOpen, Pause } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -21,6 +22,10 @@ interface Props {
 export function DashboardClient({ profile, initialReadings, totalJuz, totalPages, readingsEnabled }: Props) {
     const router = useRouter();
     const [key, setKey] = useState(0);
+    const [mounted, setMounted] = useState(false);
+
+    // Defer rendering of Radix Select + ChartContainer to avoid SSR/CSR ID mismatch
+    useEffect(() => setMounted(true), []);
 
     const handleSuccess = useCallback(() => {
         setKey((k) => k + 1);
@@ -34,8 +39,9 @@ export function DashboardClient({ profile, initialReadings, totalJuz, totalPages
             {/* Header */}
             <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-emerald-100">
                 <div className="max-w-2xl mx-auto px-4 py-3">
-                    <h1 className="text-lg font-bold bg-gradient-to-r from-emerald-700 to-emerald-500 bg-clip-text text-transparent">
-                        📖 ODOJ Tracker
+                    <h1 className="text-lg font-bold bg-gradient-to-r from-emerald-700 to-emerald-500 bg-clip-text text-transparent flex items-center gap-1.5">
+                        <BookOpen className="w-5 h-5 text-emerald-600" />
+                        ODOJ Tracker
                     </h1>
                     <p className="text-xs text-muted-foreground">
                         {profile?.full_name} · {profile?.class_name}
@@ -81,19 +87,32 @@ export function DashboardClient({ profile, initialReadings, totalJuz, totalPages
                     </div>
                 </div>
 
-                {/* Reading Form */}
-                {readingsEnabled ? (
+                {/* Reading Form — client-only to prevent Radix ID hydration mismatch */}
+                {!mounted ? (
+                    <div className="rounded-xl border border-emerald-100 bg-white p-6 animate-pulse space-y-4">
+                        <div className="h-5 w-48 bg-emerald-100 rounded" />
+                        <div className="h-10 w-full bg-gray-100 rounded" />
+                        <div className="h-10 w-full bg-gray-100 rounded" />
+                    </div>
+                ) : readingsEnabled ? (
                     <ReadingForm key={key} onSuccess={handleSuccess} />
                 ) : (
                     <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-5 text-center">
-                        <span className="text-2xl">⏸️</span>
+                        <Pause className="w-8 h-8 text-amber-500 mx-auto" />
                         <p className="text-sm font-semibold text-amber-800 mt-2">Input Bacaan Ditutup</p>
                         <p className="text-xs text-amber-600 mt-1">Admin belum mengaktifkan input bacaan. Silakan tunggu.</p>
                     </div>
                 )}
 
-                {/* Chart */}
-                <ReadingChart readings={initialReadings} />
+                {/* Chart — client-only to prevent ChartContainer ID hydration mismatch */}
+                {mounted ? (
+                    <ReadingChart readings={initialReadings} />
+                ) : (
+                    <div className="rounded-xl border border-emerald-100 bg-white p-6 animate-pulse space-y-4">
+                        <div className="h-5 w-40 bg-emerald-100 rounded" />
+                        <div className="h-48 w-full bg-gray-50 rounded" />
+                    </div>
+                )}
 
                 {/* Hadith of the Day */}
                 <HadithCard />
