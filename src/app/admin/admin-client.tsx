@@ -4,8 +4,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toggleReadingsEnabled } from "./actions";
-import { AdminChart } from "./admin-chart";
-import { StudentDetailDialog } from "./student-detail-dialog";
+import dynamic from "next/dynamic";
+
+const AdminChart = dynamic(() => import("./admin-chart").then((mod) => mod.AdminChart), {
+    ssr: false,
+    loading: () => <div className="h-[300px] w-full animate-pulse bg-emerald-50/50 rounded-lg" />
+});
+
+const StudentDetailDialog = dynamic(() => import("./student-detail-dialog").then((mod) => mod.StudentDetailDialog), { ssr: false });
 import { AdminBottomNav } from "@/components/bottom-nav";
 import { HadithCard } from "@/components/hadith-card";
 import { BookOpen, Users } from "lucide-react";

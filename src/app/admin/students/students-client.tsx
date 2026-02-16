@@ -4,7 +4,9 @@
 import { useState } from "react";
 import { getStudentReadings } from "../actions";
 import { AdminBottomNav } from "@/components/bottom-nav";
-import { StudentDetailDialog } from "../student-detail-dialog";
+import dynamic from "next/dynamic";
+
+const StudentDetailDialog = dynamic(() => import("../student-detail-dialog").then((mod) => mod.StudentDetailDialog), { ssr: false });
 import { Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
