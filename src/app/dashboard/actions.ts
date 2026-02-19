@@ -100,3 +100,100 @@ export async function getMyProfile() {
 
     return data;
 }
+
+export async function updateReading(readingId: string, formData: FormData) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return { error: "Anda harus login terlebih dahulu." };
+
+    // Verify ownership
+    const { data: reading } = await supabase
+        .from("readings")
+        .select("user_id")
+        .eq("id", readingId)
+        .single();
+
+    if (!reading || reading.user_id !== user.id) {
+        return { error: "Anda tidak memiliki akses untuk mengedit bacaan ini." };
+    }
+
+    const startSurah = parseInt(formData.get("start_surah") as string);
+    const startAyah = parseInt(formData.get("start_ayah") as string);
+    const endSurah = parseInt(formData.get("end_surah") as string);
+    const endAyah = parseInt(formData.get("end_ayah") as string);
+
+    // Validate inputs
+    if ([startSurah, startAyah, endSurah, endAyah].some(isNaN)) {
+        return { error: "Input tidak valid. Pastikan semua field terisi." };
+    }
+
+    // Validate surah range
+    const startSurahData = SURAHS.find((s) => s.number === startSurah);
+    const endSurahData = SURAHS.find((s) => s.number === endSurah);
+    if (!startSurahData || !endSurahData) {
+        return { error: "Surah tidak ditemukan." };
+    }
+
+    // Validate ayah range
+    if (startAyah < 1 || startAyah > startSurahData.numberOfAyahs) {
+        return { error: `Ayat awal harus antara 1 dan ${startSurahData.numberOfAyahs}.` };
+    }
+    if (endAyah < 1 || endAyah > endSurahData.numberOfAyahs) {
+        return { error: `Ayat akhir harus antara 1 dan ${endSurahData.numberOfAyahs}.` };
+    }
+
+    // Validate logical order
+    if (endSurah < startSurah || (endSurah === startSurah && endAyah < startAyah)) {
+        return { error: "Posisi akhir harus setelah posisi awal." };
+    }
+
+    try {
+        const { totalPages, juzObtained } = calculateReadingProgress(
+            startSurah, startAyah, endSurah, endAyah
+        );
+
+        const { error } = await supabase
+            .from("readings")
+            .update({
+                start_surah: startSurah,
+                start_ayah: startAyah,
+                end_surah: endSurah,
+                end_ayah: endAyah,
+                total_pages: totalPages,
+                juz_obtained: juzObtained,
+            })
+            .eq("id", readingId);
+
+        if (error) return { error: error.message };
+        return { success: true, totalPages, juzObtained };
+    } catch (e) {
+        return { error: (e as Error).message };
+    }
+}
+
+export async function deleteReading(readingId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return { error: "Anda harus login terlebih dahulu." };
+
+    // Verify ownership
+    const { data: reading } = await supabase
+        .from("readings")
+        .select("user_id")
+        .eq("id", readingId)
+        .single();
+
+    if (!reading || reading.user_id !== user.id) {
+        return { error: "Anda tidak memiliki akses untuk menghapus bacaan ini." };
+    }
+
+    const { error } = await supabase
+        .from("readings")
+        .delete()
+        .eq("id", readingId);
+
+    if (error) return { error: error.message };
+    return { success: true };
+}

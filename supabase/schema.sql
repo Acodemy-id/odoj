@@ -70,6 +70,12 @@ create policy "Students can insert own readings" on public.readings
 create policy "Students can view own readings" on public.readings
   for select using (auth.uid() = user_id);
 
+create policy "Students can update own readings" on public.readings
+  for update using (auth.uid() = user_id);
+
+create policy "Students can delete own readings" on public.readings
+  for delete using (auth.uid() = user_id);
+
 create policy "Admins can view all readings" on public.readings
   for select using (
     exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
