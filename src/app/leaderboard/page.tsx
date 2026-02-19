@@ -8,6 +8,9 @@ export const metadata = {
     title: "Leaderboard - ODOJ Ramadan Tracker",
 };
 
+// Revalidate every 5 minutes (300 seconds)
+export const revalidate = 300;
+
 export default async function LeaderboardPage() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
