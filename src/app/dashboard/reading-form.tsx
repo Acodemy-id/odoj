@@ -1,7 +1,7 @@
 // src/app/dashboard/reading-form.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { submitReading } from "./actions";
 import { SURAHS } from "@/lib/quran-metadata";
 import { Button } from "@/components/ui/button";
@@ -9,40 +9,51 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { PenLine } from "lucide-react";
+import { Loader2, PenLine } from "lucide-react";
 import { toast } from "sonner";
 
 export function ReadingForm({ onSuccess }: { onSuccess: () => void }) {
-    const [loading, setLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const [startSurah, setStartSurah] = useState("");
     const [endSurah, setEndSurah] = useState("");
+    const [startAyah, setStartAyah] = useState("");
+    const [endAyah, setEndAyah] = useState("");
 
     const startSurahData = SURAHS.find((s) => s.number === parseInt(startSurah));
     const endSurahData = SURAHS.find((s) => s.number === parseInt(endSurah));
 
+    const isFormValid = startSurah && endSurah && startAyah && endAyah;
+
     async function handleSubmit(formData: FormData) {
-        setLoading(true);
+        if (isPending) return; // Prevent double submit
+
         formData.set("start_surah", startSurah);
         formData.set("end_surah", endSurah);
+        formData.set("start_ayah", startAyah);
+        formData.set("end_ayah", endAyah);
 
-        const result = await submitReading(formData);
-        setLoading(false);
+        startTransition(async () => {
+            const result = await submitReading(formData);
 
-        if (result.error) {
-            toast.error(result.error);
-            return;
-        }
+            if (result.error) {
+                toast.error(result.error);
+                return;
+            }
 
-        toast.success(
-            `Berhasil dicatat! ${result.totalPages} halaman (${result.juzObtained} juz)`
-        );
-        setStartSurah("");
-        setEndSurah("");
-        onSuccess();
+            toast.success(
+                `Berhasil dicatat! ${result.totalPages} halaman (${result.juzObtained} juz)`
+            );
+            // Reset form
+            setStartSurah("");
+            setEndSurah("");
+            setStartAyah("");
+            setEndAyah("");
+            onSuccess();
+        });
     }
 
     return (
-        <Card className="border-emerald-100 shadow-lg">
+        <Card className={`border-emerald-100 shadow-lg transition-opacity ${isPending ? 'opacity-80' : ''}`}>
             <CardHeader className="pb-4">
                 <CardTitle className="text-lg flex items-center gap-2">
                     <span className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
@@ -60,7 +71,11 @@ export function ReadingForm({ onSuccess }: { onSuccess: () => void }) {
                         <div className="space-y-3">
                             <div className="space-y-1.5">
                                 <Label className="text-xs">Surah</Label>
-                                <Select value={startSurah} onValueChange={setStartSurah}>
+                                <Select 
+                                    value={startSurah} 
+                                    onValueChange={setStartSurah}
+                                    disabled={isPending}
+                                >
                                     <SelectTrigger className="w-full h-10 bg-white">
                                         <SelectValue placeholder="Pilih surah" />
                                     </SelectTrigger>
@@ -85,6 +100,9 @@ export function ReadingForm({ onSuccess }: { onSuccess: () => void }) {
                                     placeholder="1"
                                     required
                                     className="h-10 bg-white"
+                                    disabled={isPending || !startSurah}
+                                    value={startAyah}
+                                    onChange={(e) => setStartAyah(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -96,7 +114,11 @@ export function ReadingForm({ onSuccess }: { onSuccess: () => void }) {
                         <div className="space-y-3">
                             <div className="space-y-1.5">
                                 <Label className="text-xs">Surah</Label>
-                                <Select value={endSurah} onValueChange={setEndSurah}>
+                                <Select 
+                                    value={endSurah} 
+                                    onValueChange={setEndSurah}
+                                    disabled={isPending}
+                                >
                                     <SelectTrigger className="w-full h-10 bg-white">
                                         <SelectValue placeholder="Pilih surah" />
                                     </SelectTrigger>
@@ -121,17 +143,28 @@ export function ReadingForm({ onSuccess }: { onSuccess: () => void }) {
                                     placeholder="1"
                                     required
                                     className="h-10 bg-white"
+                                    disabled={isPending || !endSurah}
+                                    value={endAyah}
+                                    onChange={(e) => setEndAyah(e.target.value)}
                                 />
                             </div>
                         </div>
                     </div>
 
+                    {/* Submit Button with Loading */}
                     <Button
                         type="submit"
-                        disabled={loading || !startSurah || !endSurah}
-                        className="w-full h-11 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white font-semibold shadow-md"
+                        disabled={!isFormValid || isPending}
+                        className="w-full h-11 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white font-semibold shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {loading ? "Menyimpan..." : "Simpan Bacaan"}
+                        {isPending ? (
+                            <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                Menyimpan...
+                            </>
+                        ) : (
+                            "Simpan Bacaan"
+                        )}
                     </Button>
                 </form>
             </CardContent>

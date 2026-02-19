@@ -81,6 +81,18 @@ create policy "Admins can view all readings" on public.readings
     exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
   );
 
+-- Admin can update any reading
+create policy "Admins can update any readings" on public.readings
+  for update using (
+    exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+  );
+
+-- Admin can delete any reading
+create policy "Admins can delete any readings" on public.readings
+  for delete using (
+    exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+  );
+
 -- 7. App Settings table (feature flags)
 create table public.app_settings (
   key text primary key,
