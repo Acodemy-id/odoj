@@ -17,7 +17,7 @@ interface Props {
     userRole: string;
 }
 
-function LeaderboardTable({ entries, metric }: { entries: LeaderboardEntry[]; metric: "pages" | "juz" }) {
+function LeaderboardTable({ entries }: { entries: LeaderboardEntry[] }) {
     // Only show rank 4+
     const rest = entries.filter((e) => e.rank > 3);
 
@@ -34,12 +34,11 @@ function LeaderboardTable({ entries, metric }: { entries: LeaderboardEntry[]; me
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-12 text-center pl-3">#</TableHead>
+                        <TableHead className="w-10 text-center pl-3">#</TableHead>
                         <TableHead>Nama</TableHead>
-                        <TableHead>Kelas</TableHead>
-                        <TableHead className="text-right pr-3">
-                            {metric === "pages" ? "Halaman" : "Juz"}
-                        </TableHead>
+                        <TableHead className="hidden sm:table-cell">Kelas</TableHead>
+                        <TableHead className="text-right">Juz</TableHead>
+                        <TableHead className="text-right pr-3">Halaman</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -48,14 +47,22 @@ function LeaderboardTable({ entries, metric }: { entries: LeaderboardEntry[]; me
                             <TableCell className="text-center font-semibold text-muted-foreground pl-3">
                                 {entry.rank}
                             </TableCell>
-                            <TableCell className="font-medium">{entry.fullName}</TableCell>
-                            <TableCell>
+                            <TableCell className="font-medium">
+                                <div className="flex flex-col">
+                                    <span>{entry.fullName}</span>
+                                    <span className="text-xs text-muted-foreground sm:hidden">{entry.className}</span>
+                                </div>
+                            </TableCell>
+                            <TableCell className="hidden sm:table-cell">
                                 <Badge variant="secondary" className="text-xs">
                                     {entry.className}
                                 </Badge>
                             </TableCell>
-                            <TableCell className="text-right font-semibold text-emerald-700 pr-3">
-                                {metric === "pages" ? entry.totalPages : entry.totalJuz}
+                            <TableCell className="text-right font-semibold text-emerald-700">
+                                {entry.totalJuz}
+                            </TableCell>
+                            <TableCell className="text-right font-semibold text-amber-700 pr-3">
+                                {entry.totalPages}
                             </TableCell>
                         </TableRow>
                     ))}
@@ -122,7 +129,7 @@ export function LeaderboardClient({ dailyData, totalData, userRole }: Props) {
                                         Belum ada yang membaca hari ini. Jadilah yang pertama!
                                     </div>
                                 ) : (
-                                    <Podium top3={dailyData.slice(0, 3)} metric="pages" />
+                                    <Podium top3={dailyData.slice(0, 3)} />
                                 )}
                             </CardContent>
                         </Card>
@@ -133,7 +140,7 @@ export function LeaderboardClient({ dailyData, totalData, userRole }: Props) {
                                     <CardTitle className="text-sm text-muted-foreground">Peringkat Lainnya</CardTitle>
                                 </CardHeader>
                                 <CardContent className="px-0">
-                                    <LeaderboardTable entries={dailyData} metric="pages" />
+                                    <LeaderboardTable entries={dailyData} />
                                 </CardContent>
                             </Card>
                         )}
@@ -154,7 +161,7 @@ export function LeaderboardClient({ dailyData, totalData, userRole }: Props) {
                                         Belum ada data bacaan.
                                     </div>
                                 ) : (
-                                    <Podium top3={totalData.slice(0, 3)} metric="juz" />
+                                    <Podium top3={totalData.slice(0, 3)} />
                                 )}
                             </CardContent>
                         </Card>
@@ -165,7 +172,7 @@ export function LeaderboardClient({ dailyData, totalData, userRole }: Props) {
                                     <CardTitle className="text-sm text-muted-foreground">Peringkat Lainnya</CardTitle>
                                 </CardHeader>
                                 <CardContent className="px-0">
-                                    <LeaderboardTable entries={totalData} metric="juz" />
+                                    <LeaderboardTable entries={totalData} />
                                 </CardContent>
                             </Card>
                         )}

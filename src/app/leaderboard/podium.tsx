@@ -5,7 +5,6 @@ import type { LeaderboardEntry } from "./actions";
 
 interface PodiumProps {
     top3: LeaderboardEntry[];
-    metric: "pages" | "juz";
 }
 
 function getMedalEmoji(rank: number) {
@@ -17,11 +16,9 @@ function getMedalEmoji(rank: number) {
 function PodiumSlot({
     entry,
     height,
-    metric,
 }: {
     entry: LeaderboardEntry | undefined;
     height: string;
-    metric: "pages" | "juz";
 }) {
     if (!entry) {
         return (
@@ -46,9 +43,6 @@ function PodiumSlot({
             ? "from-gray-300 via-gray-200 to-gray-300"
             : "from-amber-700 via-amber-600 to-amber-700";
 
-    const value = metric === "pages" ? entry.totalPages : entry.totalJuz;
-    const unit = metric === "pages" ? "hal" : "juz";
-
     return (
         <div className="flex flex-col items-center flex-1 min-w-0">
             <div className="w-full flex flex-col items-center justify-end">
@@ -69,24 +63,43 @@ function PodiumSlot({
 
                 {/* Podium block */}
                 <div
-                    className={`w-full rounded-t-xl bg-gradient-to-b ${bgGradient} flex flex-col items-center justify-center shadow-inner relative overflow-hidden`}
+                    className={`w-full rounded-t-xl bg-gradient-to-b ${bgGradient} flex flex-col items-center justify-center shadow-inner relative overflow-hidden px-1 py-2`}
                     style={{ height }}
                 >
                     {/* Shimmer effect for 1st place */}
                     {isFirst && (
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
                     )}
-                    <span className={`text-lg sm:text-2xl font-black drop-shadow-md relative z-10 ${entry.rank === 2 ? "text-gray-800" : "text-white"}`}>
-                        {value}
-                    </span>
-                    <span className={`text-[10px] sm:text-xs font-medium relative z-10 ${entry.rank === 2 ? "text-gray-600" : "text-white/80"}`}>{unit}</span>
+                    
+                    {/* Juz count */}
+                    <div className="flex flex-col items-center relative z-10">
+                        <span className={`text-lg sm:text-xl font-black drop-shadow-md ${entry.rank === 2 ? "text-gray-800" : "text-white"}`}>
+                            {entry.totalJuz}
+                        </span>
+                        <span className={`text-[10px] sm:text-xs font-medium ${entry.rank === 2 ? "text-gray-600" : "text-white/80"}`}>
+                            juz
+                        </span>
+                    </div>
+                    
+                    {/* Divider */}
+                    <div className={`w-8 h-px my-1 ${entry.rank === 2 ? "bg-gray-400/50" : "bg-white/30"}`} />
+                    
+                    {/* Pages count */}
+                    <div className="flex flex-col items-center relative z-10">
+                        <span className={`text-base sm:text-lg font-bold drop-shadow-md ${entry.rank === 2 ? "text-gray-700" : "text-white/90"}`}>
+                            {entry.totalPages}
+                        </span>
+                        <span className={`text-[10px] sm:text-xs font-medium ${entry.rank === 2 ? "text-gray-500" : "text-white/70"}`}>
+                            hal
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
     );
 }
 
-export function Podium({ top3, metric }: PodiumProps) {
+export function Podium({ top3 }: PodiumProps) {
     // Podium order: 2nd, 1st, 3rd (classic podium layout)
     const first = top3.find((e) => e.rank === 1);
     const second = top3.find((e) => e.rank === 2);
@@ -95,11 +108,11 @@ export function Podium({ top3, metric }: PodiumProps) {
     return (
         <div className="flex items-end justify-center gap-2 sm:gap-4 px-2 py-4">
             {/* 2nd place */}
-            <PodiumSlot entry={second} height="100px" metric={metric} />
+            <PodiumSlot entry={second} height="120px" />
             {/* 1st place */}
-            <PodiumSlot entry={first} height="140px" metric={metric} />
+            <PodiumSlot entry={first} height="160px" />
             {/* 3rd place */}
-            <PodiumSlot entry={third} height="76px" metric={metric} />
+            <PodiumSlot entry={third} height="90px" />
         </div>
     );
 }
