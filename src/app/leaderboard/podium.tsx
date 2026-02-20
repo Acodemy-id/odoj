@@ -58,7 +58,7 @@ function PodiumSlot({
                 </div>
 
                 {/* Name & class */}
-                <p className="text-xs sm:text-sm font-bold text-center truncate w-full px-1">{entry.fullName}</p>
+                <p className="text-xs sm:text-sm font-bold text-center text-wrap w-full px-1 leading-tight">{entry.fullName}</p>
                 <p className="text-[10px] sm:text-xs text-muted-foreground mb-2">{entry.className}</p>
 
                 {/* Podium block */}
@@ -70,7 +70,7 @@ function PodiumSlot({
                     {isFirst && (
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
                     )}
-                    
+
                     {/* Juz count */}
                     <div className="flex flex-col items-center relative z-10">
                         <span className={`text-lg sm:text-xl font-black drop-shadow-md ${entry.rank === 2 ? "text-gray-800" : "text-white"}`}>
@@ -80,10 +80,10 @@ function PodiumSlot({
                             juz
                         </span>
                     </div>
-                    
+
                     {/* Divider */}
                     <div className={`w-8 h-px my-1 ${entry.rank === 2 ? "bg-gray-400/50" : "bg-white/30"}`} />
-                    
+
                     {/* Pages count */}
                     <div className="flex flex-col items-center relative z-10">
                         <span className={`text-base sm:text-lg font-bold drop-shadow-md ${entry.rank === 2 ? "text-gray-700" : "text-white/90"}`}>
