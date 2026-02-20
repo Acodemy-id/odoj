@@ -8,7 +8,8 @@ import { ReadingChart } from "./reading-chart";
 import { StudentBottomNav } from "@/components/bottom-nav";
 import { HadithCard } from "@/components/hadith-card";
 import { PwaInstallPrompt } from "@/components/pwa-install-prompt";
-import { BookOpen, Pause } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { BookOpen, Pause, TrendingUp, TrendingDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Toaster } from "@/components/ui/sonner";
 import { RamadhanCalendar } from "./ramadhan-calendar";
@@ -19,9 +20,11 @@ interface Props {
     totalJuz: number;
     totalPages: number;
     readingsEnabled: boolean;
+    trendingJuz?: number;
+    trendingPages?: number;
 }
 
-export function DashboardClient({ profile, initialReadings, totalJuz, totalPages, readingsEnabled }: Props) {
+export function DashboardClient({ profile, initialReadings, totalJuz, totalPages, readingsEnabled, trendingJuz, trendingPages }: Props) {
     const router = useRouter();
     const [key, setKey] = useState(0);
     const [mounted, setMounted] = useState(false);
@@ -33,6 +36,30 @@ export function DashboardClient({ profile, initialReadings, totalJuz, totalPages
         setKey((k) => k + 1);
         router.refresh();
     }, [router]);
+
+    // Format percentage: +12,5% or -12,5% (comma decimal)
+    const formatTrending = (val: number) => {
+        const sign = val > 0 ? "+" : ""; // Negative numbers already included in toFixed
+        return `${sign}${val.toFixed(1).replace('.', ',')}%`;
+    };
+
+    // Helper to render trend badge
+    const renderTrendBadge = (trend?: number) => {
+        if (!trend || trend === 0) return null;
+
+        const isPositive = trend > 0;
+        const Icon = isPositive ? TrendingUp : TrendingDown;
+        const colorClass = isPositive
+            ? "bg-white/20 text-white border-white/30"
+            : "bg-red-500/20 text-red-100 border-red-200/30";
+
+        return (
+            <Badge variant="outline" className={`text-[10px] px-1.5 py-0 h-5 backdrop-blur-sm self-start ${colorClass}`}>
+                <Icon className="w-3 h-3 mr-1" />
+                {formatTrending(trend)}
+            </Badge>
+        );
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-amber-50 pb-20">
@@ -55,20 +82,22 @@ export function DashboardClient({ profile, initialReadings, totalJuz, totalPages
             <main className="max-w-2xl mx-auto px-4 py-6 space-y-6">
                 {/* Summary Cards */}
                 <div className="grid grid-cols-2 gap-4">
-                    <Card className="border-emerald-100 shadow-md bg-gradient-to-br from-emerald-500 to-emerald-700 text-white">
-                        <CardHeader className="pb-1 pt-4 px-4">
+                    <Card className="border-emerald-100 shadow-md bg-gradient-to-br from-emerald-500 to-emerald-700 text-white relative overflow-hidden">
+                        <CardHeader className="pb-1 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                             <CardTitle className="text-xs font-medium text-emerald-100">Total Juz</CardTitle>
+                            {renderTrendBadge(trendingJuz)}
                         </CardHeader>
-                        <CardContent className="px-4 pb-4">
+                        <CardContent className="px-4 pb-4 pt-2">
                             <p className="text-3xl font-bold">{totalJuz}</p>
                             <p className="text-xs text-emerald-200 mt-1">dari 30 juz</p>
                         </CardContent>
                     </Card>
-                    <Card className="border-amber-100 shadow-md bg-gradient-to-br from-amber-500 to-amber-700 text-white">
-                        <CardHeader className="pb-1 pt-4 px-4">
+                    <Card className="border-amber-100 shadow-md bg-gradient-to-br from-amber-500 to-amber-700 text-white relative overflow-hidden">
+                        <CardHeader className="pb-1 pt-4 px-4 flex flex-row items-center justify-between space-y-0">
                             <CardTitle className="text-xs font-medium text-amber-100">Total Halaman</CardTitle>
+                            {renderTrendBadge(trendingPages)}
                         </CardHeader>
-                        <CardContent className="px-4 pb-4">
+                        <CardContent className="px-4 pb-4 pt-2">
                             <p className="text-3xl font-bold">{totalPages}</p>
                             <p className="text-xs text-amber-200 mt-1">dari 604 halaman</p>
                         </CardContent>

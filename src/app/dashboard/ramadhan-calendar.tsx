@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { Calendar } from "lucide-react";
 
 interface Reading {
     date: string;
@@ -46,7 +47,8 @@ export function RamadhanCalendar({ readings }: RamadhanCalendarProps) {
         <Card className="border-emerald-100 shadow-sm">
             <CardHeader className="pb-3">
                 <CardTitle className="text-lg font-bold text-emerald-800 flex items-center gap-2">
-                    📅 Kalender Ramadan 1447 H
+                    <Calendar className="w-5 h-5 text-emerald-600" />
+                    Kalender Ramadan 1447 H
                 </CardTitle>
             </CardHeader>
             <CardContent>
@@ -55,7 +57,7 @@ export function RamadhanCalendar({ readings }: RamadhanCalendarProps) {
                         <div
                             key={day.ramadhanDay}
                             className={cn(
-                                "flex flex-col items-center justify-center p-2 rounded-lg border text-center transition-colors",
+                                "flex flex-col items-center justify-center p-0 rounded-xl border text-center transition-colors",
                                 day.hasReading
                                     ? "bg-emerald-50 border-emerald-200"
                                     : "bg-white border-gray-100 opacity-80"
@@ -64,9 +66,7 @@ export function RamadhanCalendar({ readings }: RamadhanCalendarProps) {
                             <span className="text-[10px] uppercase text-muted-foreground font-medium">
                                 {day.ramadhanDay}
                             </span>
-                            <span className="text-[10px] text-gray-400">
-                                {day.displayDate}
-                            </span>
+
                             <div className="flex items-baseline gap-0.5">
                                 <span className={cn(
                                     "text-lg font-bold",
@@ -78,6 +78,10 @@ export function RamadhanCalendar({ readings }: RamadhanCalendarProps) {
                                     <span className="text-[10px] text-emerald-500 font-medium">juz</span>
                                 )}
                             </div>
+
+                            <span className="text-[10px] text-gray-400">
+                                {day.displayDate}
+                            </span>
 
                         </div>
                     ))}

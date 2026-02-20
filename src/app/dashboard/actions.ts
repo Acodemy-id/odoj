@@ -53,7 +53,16 @@ export async function submitReading(formData: FormData) {
 
         // Calculate date in WIB (UTC+7)
         // We add 7 hours to current UTC time to get the date in Indonesia
-        const wibDate = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().split("T")[0];
+        const dateOption = formData.get("date_option") as string || "today";
+
+        let wibDateObj = new Date(Date.now() + 7 * 60 * 60 * 1000);
+
+        if (dateOption === "yesterday") {
+            // Subtract 1 day (24 hours)
+            wibDateObj = new Date(wibDateObj.getTime() - 24 * 60 * 60 * 1000);
+        }
+
+        const wibDate = wibDateObj.toISOString().split("T")[0];
 
         const { error } = await supabase.from("readings").insert({
             user_id: user.id,

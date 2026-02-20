@@ -73,10 +73,10 @@ function PodiumSlot({
 
                     {/* Juz count */}
                     <div className="flex flex-col items-center relative z-10">
-                        <span className={`text-lg sm:text-xl font-black drop-shadow-md ${entry.rank === 2 ? "text-gray-800" : "text-white"}`}>
+                        <span className={`text-lg sm:text-xl font-black drop-shadow-md ${entry.rank === 2 || entry.rank === 1 ? "text-gray-800" : "text-white"}`}>
                             {entry.totalJuz}
                         </span>
-                        <span className={`text-[10px] sm:text-xs font-medium ${entry.rank === 2 ? "text-gray-600" : "text-white/80"}`}>
+                        <span className={`text-[10px] sm:text-xs font-medium ${entry.rank === 2 || entry.rank === 1 ? "text-gray-600" : "text-white/80"}`}>
                             juz
                         </span>
                     </div>
@@ -86,10 +86,10 @@ function PodiumSlot({
 
                     {/* Pages count */}
                     <div className="flex flex-col items-center relative z-10">
-                        <span className={`text-base sm:text-lg font-bold drop-shadow-md ${entry.rank === 2 ? "text-gray-700" : "text-white/90"}`}>
+                        <span className={`text-base sm:text-lg font-bold drop-shadow-md ${entry.rank === 2 || entry.rank === 1 ? "text-gray-700" : "text-white/90"}`}>
                             {entry.totalPages}
                         </span>
-                        <span className={`text-[10px] sm:text-xs font-medium ${entry.rank === 2 ? "text-gray-500" : "text-white/70"}`}>
+                        <span className={`text-[10px] sm:text-xs font-medium ${entry.rank === 2 || entry.rank === 1 ? "text-gray-500" : "text-white/70"}`}>
                             hal
                         </span>
                     </div>

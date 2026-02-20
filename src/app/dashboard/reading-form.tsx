@@ -65,14 +65,28 @@ export function ReadingForm({ onSuccess }: { onSuccess: () => void }) {
             </CardHeader>
             <CardContent>
                 <form action={handleSubmit} className="space-y-4">
+                    {/* Date Selection */}
+                    <div className="p-3 bg-blue-50/50 rounded-lg space-y-3">
+                        <p className="text-sm font-semibold text-blue-700">Tanggal Bacaan:</p>
+                        <Select name="date_option" defaultValue="today">
+                            <SelectTrigger className="w-full h-10 bg-white">
+                                <SelectValue placeholder="Pilih tanggal" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="today">Hari ini</SelectItem>
+                                <SelectItem value="yesterday">Kemarin</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
                     {/* Start position */}
                     <div className="p-3 bg-emerald-50/50 rounded-lg space-y-3">
                         <p className="text-sm font-semibold text-emerald-700">Mulai dari:</p>
                         <div className="space-y-3">
                             <div className="space-y-1.5">
                                 <Label className="text-xs">Surah</Label>
-                                <Select 
-                                    value={startSurah} 
+                                <Select
+                                    value={startSurah}
                                     onValueChange={setStartSurah}
                                     disabled={isPending}
                                 >
@@ -114,8 +128,8 @@ export function ReadingForm({ onSuccess }: { onSuccess: () => void }) {
                         <div className="space-y-3">
                             <div className="space-y-1.5">
                                 <Label className="text-xs">Surah</Label>
-                                <Select 
-                                    value={endSurah} 
+                                <Select
+                                    value={endSurah}
                                     onValueChange={setEndSurah}
                                     disabled={isPending}
                                 >
