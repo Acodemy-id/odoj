@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { toggleReadingsEnabled } from "./actions";
 import { recalculateAllAwards } from "./admin-actions";
 import dynamic from "next/dynamic";
+import { AggregatedData } from "./queries";
 
 const AdminChart = dynamic(() => import("./admin-chart").then((mod) => mod.AdminChart), {
     ssr: false,
@@ -31,11 +32,6 @@ interface Student {
     className: string;
     totalPages: number;
     totalJuz: number;
-}
-
-interface AggregatedData {
-    date: string;
-    totalPages: number;
 }
 
 interface Props {

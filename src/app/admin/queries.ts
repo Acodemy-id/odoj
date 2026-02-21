@@ -1,7 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 
+export interface AggregatedData {
+    date: string;
+    totalPages: number;
+    totalJuz: number;
+}
 
-export async function getAllReadingsAggregated() {
+export async function getAllReadingsAggregated(): Promise<AggregatedData[]> {
     const supabase = await createClient();
 
     // Get all readings, aggregated by date
@@ -17,7 +22,7 @@ export async function getAllReadingsAggregated() {
 
     // Group by date and sum pages and juz
     const dailyMap = new Map<string, { totalPages: number; totalJuz: number }>();
-    (data || []).forEach((r) => {
+    (data || []).forEach((r: { date: string; total_pages: number; juz_obtained: number | null }) => {
         const existing = dailyMap.get(r.date) || { totalPages: 0, totalJuz: 0 };
         dailyMap.set(r.date, {
             totalPages: existing.totalPages + r.total_pages,

@@ -3,6 +3,7 @@
 
 import { TrendingUp, Sparkles } from "lucide-react";
 import { CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts";
+import { AggregatedData } from "./queries";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     ChartContainer,
@@ -11,11 +12,6 @@ import {
     type ChartConfig,
 } from "@/components/ui/chart";
 
-interface AggregatedData {
-    date: string;
-    totalPages: number;
-    totalJuz: number;
-}
 
 const chartConfig = {
     pages: {
