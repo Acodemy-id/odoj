@@ -9,6 +9,7 @@ export interface LeaderboardEntry {
     className: string;
     totalPages: number;
     totalJuz: number;
+    khatamCount: number;
     rank: number;
 }
 
@@ -46,6 +47,20 @@ export async function getDailyLeaderboard(): Promise<LeaderboardEntry[]> {
         userTotals.set(r.user_id, current);
     });
 
+    // Get khatam awards for these users
+    const { data: awards } = await supabase
+        .from("user_awards")
+        .select("user_id, award_value")
+        .eq("award_type", "khatam");
+
+    const khatamMap = new Map<string, number>();
+    awards?.forEach(a => {
+        const currentMax = khatamMap.get(a.user_id) || 0;
+        if (a.award_value > currentMax) {
+            khatamMap.set(a.user_id, a.award_value);
+        }
+    });
+
     // Build sorted array
     const entries: LeaderboardEntry[] = Array.from(userTotals.entries())
         .map(([userId, totals]) => {
@@ -56,6 +71,7 @@ export async function getDailyLeaderboard(): Promise<LeaderboardEntry[]> {
                 className: profile?.class_name || "-",
                 totalPages: totals.pages,
                 totalJuz: Math.round(totals.juz * 100) / 100,
+                khatamCount: khatamMap.get(userId) || 0,
                 rank: 0,
             };
         })
@@ -101,6 +117,20 @@ export async function getTotalLeaderboard(): Promise<LeaderboardEntry[]> {
         userTotals.set(r.user_id, current);
     });
 
+    // Get khatam awards for these users
+    const { data: awards } = await supabase
+        .from("user_awards")
+        .select("user_id, award_value")
+        .eq("award_type", "khatam");
+
+    const khatamMap = new Map<string, number>();
+    awards?.forEach(a => {
+        const currentMax = khatamMap.get(a.user_id) || 0;
+        if (a.award_value > currentMax) {
+            khatamMap.set(a.user_id, a.award_value);
+        }
+    });
+
     // Include all students (even those with 0 readings)
     const entries: LeaderboardEntry[] = profiles
         .filter((p) => p.class_name) // safety check
@@ -112,6 +142,7 @@ export async function getTotalLeaderboard(): Promise<LeaderboardEntry[]> {
                 className: p.class_name,
                 totalPages: totals.pages,
                 totalJuz: Math.round(totals.juz * 100) / 100,
+                khatamCount: khatamMap.get(p.id) || 0,
                 rank: 0,
             };
         })
@@ -122,4 +153,45 @@ export async function getTotalLeaderboard(): Promise<LeaderboardEntry[]> {
     });
 
     return entries;
+}
+
+export interface AwardEntry {
+    userId: string;
+    fullName: string;
+    className: string;
+    awardType: string;
+    awardValue: number;
+    achievedAt: string;
+}
+
+/**
+ * Get all awards for Wall of Fame
+ */
+export async function getAwards(): Promise<AwardEntry[]> {
+    const supabase = await createClient();
+
+    const { data: awards, error: awardErr } = await supabase
+        .from("user_awards")
+        .select(`
+            user_id,
+            award_type,
+            award_value,
+            achieved_at,
+            profiles (
+                full_name,
+                class_name
+            )
+        `)
+        .order("achieved_at", { ascending: false });
+
+    if (awardErr || !awards) return [];
+
+    return awards.map((a: any) => ({
+        userId: a.user_id,
+        fullName: a.profiles?.full_name || "Unknown",
+        className: a.profiles?.class_name || "-",
+        awardType: a.award_type,
+        awardValue: a.award_value,
+        achievedAt: a.achieved_at,
+    }));
 }

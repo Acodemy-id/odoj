@@ -5,6 +5,13 @@ import { createClient } from "@/lib/supabase/server";
 import { calculateReadingProgress } from "@/lib/calculate-reading";
 import { SURAHS } from "@/lib/quran-metadata";
 import { getReadingsEnabled } from "@/app/admin/actions";
+import {
+    checkAndAwardKhatam,
+    checkAndAwardTiming,
+    checkAndAwardODOJ,
+    checkAndAwardStreak,
+    checkAndAwardSprint
+} from "@/lib/awards";
 
 export async function submitReading(formData: FormData) {
     const supabase = await createClient();
@@ -76,6 +83,17 @@ export async function submitReading(formData: FormData) {
         });
 
         if (error) return { error: error.message };
+
+        // Post-submit award checks (Background)
+        const createdAt = new Date().toISOString();
+        Promise.allSettled([
+            checkAndAwardKhatam(user.id),
+            checkAndAwardTiming(user.id, createdAt, wibDate),
+            checkAndAwardODOJ(user.id, wibDate),
+            checkAndAwardStreak(user.id),
+            checkAndAwardSprint(user.id, wibDate)
+        ]).catch(e => console.error("Award calculation error:", e));
+
         return { success: true, totalPages, juzObtained };
     } catch (e) {
         return { error: (e as Error).message };

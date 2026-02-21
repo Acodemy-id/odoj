@@ -1,7 +1,7 @@
 // src/app/leaderboard/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { getDailyLeaderboard, getTotalLeaderboard } from "./actions";
+import { getDailyLeaderboard, getTotalLeaderboard, getAwards } from "./actions";
 import { LeaderboardClient } from "./leaderboard-client";
 
 export const metadata = {
@@ -24,10 +24,11 @@ export default async function LeaderboardPage() {
         .eq("id", user.id)
         .single();
 
-    const [daily, total] = await Promise.all([
+    const [daily, total, awards] = await Promise.all([
         getDailyLeaderboard(),
         getTotalLeaderboard(),
+        getAwards(),
     ]);
 
-    return <LeaderboardClient dailyData={daily} totalData={total} userRole={profile?.role || "student"} />;
+    return <LeaderboardClient dailyData={daily} totalData={total} awardsData={awards} userRole={profile?.role || "student"} userId={user.id} />;
 }

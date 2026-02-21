@@ -58,8 +58,15 @@ function PodiumSlot({
                 </div>
 
                 {/* Name & class */}
-                <p className="text-xs sm:text-sm font-bold text-center text-wrap w-full px-1 leading-tight">{entry.fullName}</p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground mb-2">{entry.className}</p>
+                <div className="flex flex-col items-center w-full px-1">
+                    <p className="text-xs sm:text-sm font-bold text-center text-wrap leading-tight">{entry.fullName}</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground mb-1">{entry.className}</p>
+                    {entry.khatamCount > 0 && (
+                        <div className="flex items-center gap-0.5 px-1.5 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-full text-[9px] font-black shadow-sm mb-2">
+                            🏆 {entry.khatamCount}x
+                        </div>
+                    )}
+                </div>
 
                 {/* Podium block */}
                 <div

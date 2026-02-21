@@ -5,10 +5,10 @@ import { useState, useEffect, useTransition } from "react";
 import { getStudentReadings } from "./actions";
 import { updateStudentReading, deleteStudentReading } from "./admin-actions";
 import { SURAHS } from "@/lib/quran-metadata";
-import { 
-    Dialog, 
-    DialogContent, 
-    DialogHeader, 
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
     DialogTitle,
     DialogFooter,
     DialogDescription,
@@ -17,8 +17,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { Pencil, Trash2, X, Check, Loader2 } from "lucide-react";
+import { Pencil, Trash2, X, Check, Loader2, TrendingUp, Calendar as CalendarIcon } from "lucide-react";
+import { ReadingChart } from "../dashboard/reading-chart";
+import { RamadhanCalendar } from "../dashboard/ramadhan-calendar";
 import { toast } from "sonner";
 
 interface Student {
@@ -69,21 +70,6 @@ export function StudentDetailDialog({ student, open, onClose }: Props) {
             });
         }
     }, [student, open]);
-
-    // Aggregate by date for chart
-    const dailyMap = new Map<string, number>();
-    readings.forEach((r) => {
-        const current = dailyMap.get(r.date) || 0;
-        dailyMap.set(r.date, current + r.total_pages);
-    });
-
-    const chartData = Array.from(dailyMap.entries())
-        .map(([date, pages]) => ({
-            date: new Date(date).toLocaleDateString("id-ID", { day: "2-digit", month: "short" }),
-            rawDate: date,
-            pages,
-        }))
-        .sort((a, b) => a.rawDate.localeCompare(b.rawDate));
 
     const sortedReadings = [...readings].sort((a, b) => b.date.localeCompare(a.date));
 
@@ -167,28 +153,25 @@ export function StudentDetailDialog({ student, open, onClose }: Props) {
                         </div>
                     </div>
 
-                    {/* Chart */}
+                    {/* Progress Chart & Calendar */}
                     {loading ? (
-                        <div className="h-48 flex items-center justify-center text-muted-foreground">
+                        <div className="h-48 flex items-center justify-center text-muted-foreground animate-pulse bg-gray-50/50 rounded-xl">
+                            <Loader2 className="w-6 h-6 animate-spin text-emerald-500 mr-2" />
                             Memuat data...
                         </div>
-                    ) : chartData.length === 0 ? (
-                        <div className="h-48 flex items-center justify-center text-muted-foreground text-sm">
-                            Belum ada data bacaan.
-                        </div>
                     ) : (
-                        <ResponsiveContainer width="100%" height={200}>
-                            <BarChart data={chartData}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                                <XAxis dataKey="date" tick={{ fontSize: 10 }} tickLine={false} />
-                                <YAxis tick={{ fontSize: 10 }} tickLine={false} />
-                                <Tooltip
-                                    contentStyle={{ borderRadius: "8px", border: "1px solid #d1fae5" }}
-                                    formatter={(value) => [`${value} halaman`, "Dibaca"]}
-                                />
-                                <Bar dataKey="pages" fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={30} />
-                            </BarChart>
-                        </ResponsiveContainer>
+                        <div className="space-y-6">
+                            {readings.length > 0 ? (
+                                <>
+                                    <ReadingChart readings={readings} />
+                                    <RamadhanCalendar readings={readings} />
+                                </>
+                            ) : (
+                                <div className="h-32 flex items-center justify-center text-muted-foreground text-sm border-2 border-dashed border-gray-100 rounded-xl">
+                                    Belum ada data bacaan.
+                                </div>
+                            )}
+                        </div>
                     )}
 
                     {/* Detailed Readings List */}
@@ -205,8 +188,8 @@ export function StudentDetailDialog({ student, open, onClose }: Props) {
                         ) : (
                             <div className="space-y-2 max-h-[300px] overflow-y-auto">
                                 {sortedReadings.map((r) => (
-                                    <div 
-                                        key={r.id} 
+                                    <div
+                                        key={r.id}
                                         className="p-3 bg-gray-50 rounded-lg hover:bg-emerald-50/50 transition-colors group"
                                     >
                                         <div className="flex items-center justify-between mb-1">

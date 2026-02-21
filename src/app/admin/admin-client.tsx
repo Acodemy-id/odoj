@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toggleReadingsEnabled } from "./actions";
+import { recalculateAllAwards } from "./admin-actions";
 import dynamic from "next/dynamic";
 
 const AdminChart = dynamic(() => import("./admin-chart").then((mod) => mod.AdminChart), {
@@ -14,7 +15,7 @@ const AdminChart = dynamic(() => import("./admin-chart").then((mod) => mod.Admin
 const StudentDetailDialog = dynamic(() => import("./student-detail-dialog").then((mod) => mod.StudentDetailDialog), { ssr: false });
 import { AdminBottomNav } from "@/components/bottom-nav";
 import { HadithCard } from "@/components/hadith-card";
-import { BookOpen, Users } from "lucide-react";
+import { BookOpen, Users, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -51,6 +52,7 @@ export function AdminDashboardClient({ profile, aggregatedData, initialStudents,
     const [dialogOpen, setDialogOpen] = useState(false);
     const [inputEnabled, setInputEnabled] = useState(readingsEnabled);
     const [toggling, setToggling] = useState(false);
+    const [recalculating, setRecalculating] = useState(false);
 
     // Client-side filter
     const filteredStudents = classFilter === "all"
@@ -77,6 +79,18 @@ export function AdminDashboardClient({ profile, aggregatedData, initialStudents,
         }
         setInputEnabled(result.enabled);
         toast.success(result.enabled ? "Input bacaan diaktifkan" : "Input bacaan dinonaktifkan");
+    }
+
+    async function handleRecalculateAwards() {
+        setRecalculating(true);
+        const result = await recalculateAllAwards();
+        setRecalculating(false);
+        if (result.error) {
+            toast.error(`Gagal: ${result.error}`);
+            return;
+        }
+        toast.success(`Selesai! ${result.stats?.awards} award dihitung untuk ${result.stats?.users} siswa.`);
+        router.refresh();
     }
 
     return (
@@ -146,6 +160,32 @@ export function AdminDashboardClient({ profile, aggregatedData, initialStudents,
                             className={!inputEnabled ? 'bg-emerald-600 hover:bg-emerald-700' : ''}
                         >
                             {toggling ? '...' : inputEnabled ? 'Nonaktifkan' : 'Aktifkan'}
+                        </Button>
+                    </CardContent>
+                </Card>
+
+                {/* Recalculate Awards */}
+                <Card className="border border-amber-200 shadow-md bg-amber-50/50">
+                    <CardContent className="flex items-center justify-between py-4 px-4">
+                        <div className="flex items-center gap-3">
+                            <span className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+                                <Award className="w-4 h-4 text-amber-600" />
+                            </span>
+                            <div>
+                                <p className="text-sm font-semibold">Hitung Ulang Awards</p>
+                                <p className="text-xs text-muted-foreground">
+                                    Kalkulasi ulang semua award dari data bacaan
+                                </p>
+                            </div>
+                        </div>
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={handleRecalculateAwards}
+                            disabled={recalculating}
+                            className="border-amber-300 text-amber-700 hover:bg-amber-100"
+                        >
+                            {recalculating ? 'Menghitung...' : 'Hitung Ulang'}
                         </Button>
                     </CardContent>
                 </Card>

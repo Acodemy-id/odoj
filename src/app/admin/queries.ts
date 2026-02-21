@@ -7,7 +7,7 @@ export async function getAllReadingsAggregated() {
     // Get all readings, aggregated by date
     const { data, error } = await supabase
         .from("readings")
-        .select("date, total_pages")
+        .select("date, total_pages, juz_obtained")
         .order("date", { ascending: true });
 
     if (error) {
@@ -15,15 +15,19 @@ export async function getAllReadingsAggregated() {
         return [];
     }
 
-    // Group by date and sum pages
-    const dailyMap = new Map<string, number>();
+    // Group by date and sum pages and juz
+    const dailyMap = new Map<string, { totalPages: number; totalJuz: number }>();
     (data || []).forEach((r) => {
-        const current = dailyMap.get(r.date) || 0;
-        dailyMap.set(r.date, current + r.total_pages);
+        const existing = dailyMap.get(r.date) || { totalPages: 0, totalJuz: 0 };
+        dailyMap.set(r.date, {
+            totalPages: existing.totalPages + r.total_pages,
+            totalJuz: existing.totalJuz + (r.juz_obtained || 0)
+        });
     });
 
-    return Array.from(dailyMap.entries()).map(([date, totalPages]) => ({
+    return Array.from(dailyMap.entries()).map(([date, stats]) => ({
         date,
-        totalPages,
+        totalPages: stats.totalPages,
+        totalJuz: parseFloat(stats.totalJuz.toFixed(2))
     }));
 }

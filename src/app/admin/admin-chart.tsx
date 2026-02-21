@@ -14,6 +14,7 @@ import {
 interface AggregatedData {
     date: string;
     totalPages: number;
+    totalJuz: number;
 }
 
 const chartConfig = {
@@ -21,8 +22,8 @@ const chartConfig = {
         label: "Halaman",
         color: "var(--chart-1)",
     },
-    cumulative: {
-        label: "Kumulatif",
+    juz: {
+        label: "Juz",
         color: "var(--chart-2)",
     },
 } satisfies ChartConfig;
@@ -33,18 +34,14 @@ export function AdminChart({ data }: { data: AggregatedData[] }) {
             date: new Date(d.date).toLocaleDateString("id-ID", { day: "2-digit", month: "short" }),
             rawDate: d.date,
             pages: d.totalPages,
+            juz: d.totalJuz,
         }))
         .sort((a, b) => a.rawDate.localeCompare(b.rawDate));
 
-    // Calculate cumulative
-    let cumulative = 0;
-    const cumulativeData = chartData.map((d) => {
-        cumulative += d.pages;
-        return { ...d, cumulative };
-    });
-
-    const totalPages = cumulativeData.length > 0 ? cumulativeData[cumulativeData.length - 1].cumulative : 0;
+    const totalPages = chartData.reduce((sum, d) => sum + d.pages, 0);
+    const totalJuz = chartData.reduce((sum, d) => sum + d.juz, 0);
     const avgPages = chartData.length > 0 ? Math.round(totalPages / chartData.length) : 0;
+    const avgJuz = chartData.length > 0 ? (totalJuz / chartData.length).toFixed(1) : 0;
 
     return (
         <Card className="border-emerald-100 shadow-lg">
@@ -53,11 +50,11 @@ export function AdminChart({ data }: { data: AggregatedData[] }) {
                     <span className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
                         <TrendingUp className="w-4 h-4 text-emerald-600" />
                     </span>
-                    Progress Seluruh Siswa
+                    Progress Seluruh Siswa (Per Hari)
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                {cumulativeData.length === 0 ? (
+                {chartData.length === 0 ? (
                     <div className="h-48 flex items-center justify-center text-muted-foreground text-sm gap-2">
                         <Sparkles className="w-4 h-4 text-amber-400" />
                         Belum ada data bacaan dari siswa.
@@ -66,7 +63,7 @@ export function AdminChart({ data }: { data: AggregatedData[] }) {
                     <ChartContainer config={chartConfig}>
                         <LineChart
                             accessibilityLayer
-                            data={cumulativeData}
+                            data={chartData}
                             margin={{
                                 top: 20,
                                 left: 12,
@@ -84,13 +81,14 @@ export function AdminChart({ data }: { data: AggregatedData[] }) {
                                 cursor={false}
                                 content={<ChartTooltipContent indicator="line" />}
                             />
+                            {/* Pages Line (Green) */}
                             <Line
-                                dataKey="cumulative"
-                                type="natural"
-                                stroke="var(--color-cumulative)"
+                                dataKey="pages"
+                                type="monotone"
+                                stroke="var(--color-pages)"
                                 strokeWidth={2}
                                 dot={{
-                                    fill: "var(--color-cumulative)",
+                                    fill: "var(--color-pages)",
                                 }}
                                 activeDot={{
                                     r: 6,
@@ -100,21 +98,48 @@ export function AdminChart({ data }: { data: AggregatedData[] }) {
                                     position="top"
                                     offset={12}
                                     className="fill-foreground"
-                                    fontSize={12}
+                                    fontSize={10}
+                                />
+                            </Line>
+                            {/* Juz Line (Orange/Amber) */}
+                            <Line
+                                dataKey="juz"
+                                type="monotone"
+                                stroke="var(--color-juz)"
+                                strokeWidth={2}
+                                dot={{
+                                    fill: "var(--color-juz)",
+                                }}
+                                activeDot={{
+                                    r: 6,
+                                }}
+                            >
+                                <LabelList
+                                    position="bottom"
+                                    offset={12}
+                                    className="fill-amber-600"
+                                    fontSize={10}
                                 />
                             </Line>
                         </LineChart>
                     </ChartContainer>
                 )}
             </CardContent>
-            {cumulativeData.length > 0 && (
+            {chartData.length > 0 && (
                 <CardFooter className="flex-col items-start gap-2 text-sm">
-                    <div className="flex gap-2 leading-none font-medium">
-                        Total kumulatif {totalPages} halaman
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 leading-none font-medium">
+                        <div className="flex items-center gap-1">
+                            <span className="w-2 H-2 rounded-full bg-[var(--chart-1)]" />
+                            Avg: {avgPages} halaman/hari
+                        </div>
+                        <div className="flex items-center gap-1 text-amber-600">
+                            <span className="w-2 H-2 rounded-full bg-[var(--chart-2)]" />
+                            Avg: {avgJuz} juz/hari
+                        </div>
                         <TrendingUp className="h-4 w-4 text-emerald-600" />
                     </div>
                     <div className="text-muted-foreground leading-none">
-                        Rata-rata {avgPages} halaman/hari dari {chartData.length} hari
+                        Total {totalPages} halaman & {totalJuz.toFixed(1)} juz dari {chartData.length} hari
                     </div>
                 </CardFooter>
             )}
