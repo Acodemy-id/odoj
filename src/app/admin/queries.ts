@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { fetchAllRows } from "@/lib/supabase-helpers";
 
 export interface AggregatedData {
     date: string;
@@ -9,13 +10,13 @@ export interface AggregatedData {
 export async function getAllReadingsAggregated(): Promise<AggregatedData[]> {
     const supabase = await createClient();
 
-    // Get all readings, aggregated by date
-    const { data, error } = await supabase
-        .from("readings")
-        .select("date, total_pages, juz_obtained")
-        .order("date", { ascending: true });
-
-    if (error) {
+    // Fetch ALL readings with pagination to bypass Supabase's 1000-row default limit
+    let data: { date: string; total_pages: number; juz_obtained: number | null }[];
+    try {
+        data = await fetchAllRows(supabase, "readings", "date, total_pages, juz_obtained", {
+            order: { column: "date", ascending: true }
+        });
+    } catch (error) {
         console.error("Error fetching aggregated readings:", error);
         return [];
     }

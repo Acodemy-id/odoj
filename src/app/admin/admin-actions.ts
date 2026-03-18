@@ -2,6 +2,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { fetchAllRows } from "@/lib/supabase-helpers";
 import { calculateReadingProgress } from "@/lib/calculate-reading";
 import { SURAHS } from "@/lib/quran-metadata";
 
@@ -33,14 +34,16 @@ export async function recalculateAllAwards(): Promise<{ success: boolean; error?
 
         if (deleteError) return { success: false, error: `Failed to clear awards: ${deleteError.message}` };
 
-        // 2. Get all readings with created_at for timing awards
-        const { data: allReadings, error: readError } = await supabase
-            .from("readings")
-            .select("user_id, date, juz_obtained, total_pages, created_at")
-            .order("date", { ascending: true });
-
-        if (readError) return { success: false, error: `Failed to fetch readings: ${readError.message}` };
-        if (!allReadings || allReadings.length === 0) return { success: true, stats: { users: 0, awards: 0 } };
+        // 2. Fetch ALL readings with pagination to bypass Supabase's 1000-row default limit
+        let allReadings: { user_id: string; date: string; juz_obtained: number; total_pages: number; created_at: string }[];
+        try {
+            allReadings = await fetchAllRows(supabase, "readings", "user_id, date, juz_obtained, total_pages, created_at", {
+                order: { column: "date", ascending: true }
+            });
+        } catch (readError) {
+            return { success: false, error: `Failed to fetch readings: ${(readError as Error).message}` };
+        }
+        if (allReadings.length === 0) return { success: true, stats: { users: 0, awards: 0 } };
 
         // 3. Group readings by user
         const userReadings = new Map<string, typeof allReadings>();

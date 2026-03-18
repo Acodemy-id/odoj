@@ -2,6 +2,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { fetchAllRows } from "@/lib/supabase-helpers";
 
 export interface LeaderboardEntry {
     userId: string;
@@ -20,13 +21,15 @@ export async function getDailyLeaderboard(): Promise<LeaderboardEntry[]> {
     const supabase = await createClient();
     const today = new Date().toISOString().split("T")[0];
 
-    // Get today's readings
-    const { data: readings, error: readingErr } = await supabase
-        .from("readings")
-        .select("user_id, total_pages, juz_obtained")
-        .eq("date", today);
-
-    if (readingErr || !readings) return [];
+    // Fetch today's readings with pagination to bypass Supabase's 1000-row default limit
+    let readings: { user_id: string; total_pages: number; juz_obtained: number }[];
+    try {
+        readings = await fetchAllRows(supabase, "readings", "user_id, total_pages, juz_obtained", {
+            filters: [{ column: "date", op: "eq", value: today }]
+        });
+    } catch {
+        return [];
+    }
 
     // Get all student profiles
     const { data: profiles } = await supabase
@@ -91,12 +94,13 @@ export async function getDailyLeaderboard(): Promise<LeaderboardEntry[]> {
 export async function getTotalLeaderboard(): Promise<LeaderboardEntry[]> {
     const supabase = await createClient();
 
-    // Get all readings
-    const { data: readings, error: readingErr } = await supabase
-        .from("readings")
-        .select("user_id, total_pages, juz_obtained");
-
-    if (readingErr || !readings) return [];
+    // Fetch ALL readings with pagination to bypass Supabase's 1000-row default limit
+    let readings: { user_id: string; total_pages: number; juz_obtained: number }[];
+    try {
+        readings = await fetchAllRows(supabase, "readings", "user_id, total_pages, juz_obtained");
+    } catch {
+        return [];
+    }
 
     // Get all student profiles
     const { data: profiles } = await supabase
